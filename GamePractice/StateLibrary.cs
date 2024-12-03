@@ -27,10 +27,43 @@ namespace GamePractice
         }
         public override void Enter()
         {
-            Console.WriteLine("you go exploring");
-            //Initialize child states
+            Console.WriteLine("You go exploring...");
+
+            // Add substates to the substate machine
             SubStateMachine.AddState("dungeon", new DungeonState());
             SubStateMachine.AddState("forest", new ForestState());
+            SubStateMachine.ChangeState("forest");
+
+            // Dynamically create a submenu for the Explore state
+            Menu exploreMenu = new Menu();
+            exploreMenu.AddOption(new MenuOption("dungeon", "Explore a dark dungeon", () =>
+            {
+                SubStateMachine.ChangeState("dungeon");
+            }));
+            exploreMenu.AddOption(new MenuOption("forest", "Explore a lush forest", () =>
+            {
+                SubStateMachine.ChangeState("forest");
+            }));
+            exploreMenu.AddOption(new MenuOption("back", "Return to main menu", () =>
+            {
+                Console.WriteLine("Returning to main menu...");
+            }));
+
+            // Show submenu
+            while (true)
+            {
+                Console.Clear();
+                SubStateMachine.Update();
+                exploreMenu.Display();
+
+                Console.WriteLine("Enter a command:");
+                string input = Console.ReadLine();
+                if (input == "back")
+                {
+                    break; // Exit submenu
+                }
+                exploreMenu.HandleInput(input);
+            }
         }
 
         public override void Exit()
